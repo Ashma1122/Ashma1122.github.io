@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ashma Bhagad — Developer Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #161616;
+    --cream: #f0ead8;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --muted: #666;
+    --border: #222;
+    --white: #fafafa;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  nav.scrolled {
+    border-color: var(--border);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--cream);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 70% 50%, rgba(201,168,76,0.06) 0%, transparent 70%);
+  }
+  .hero-grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+  }
+  .hero-tag {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(72px, 10vw, 140px);
+    font-weight: 300;
+    line-height: 0.9;
+    color: var(--white);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-name em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+  .hero-desc {
+    max-width: 520px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    background: transparent;
+    cursor: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .btn:hover::before { transform: translateX(0); }
+  .btn:hover { color: var(--bg); }
+  .btn span { position: relative; z-index: 1; }
+  .btn-ghost {
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost::before { background: var(--bg3); }
+  .btn-ghost:hover { color: var(--cream); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    right: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+  }
+  .hero-scroll span {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 120px 48px;
+  }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(42px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1;
+    color: var(--white);
+    margin-bottom: 60px;
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about-text {
+    color: var(--muted);
+    line-height: 1.9;
+  }
+  .about-text p { margin-bottom: 20px; }
+  .about-text strong { color: var(--cream); font-weight: 500; }
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 32px 28px;
+    transition: border-color 0.3s;
+  }
+  .stat-card:hover { border-color: var(--gold); }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* SKILLS */
+  .skills-section { background: var(--bg2); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+  }
+  .skill-group {
+    padding: 36px 32px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .skill-group:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+  }
+  .skill-group-title {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skill-tag {
+    font-size: 11px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .skill-group:hover .skill-tag {
+    border-color: rgba(201,168,76,0.3);
+    color: var(--cream);
+  }
+
+  /* PROJECTS */
+  .projects-list { display: flex; flex-direction: column; gap: 2px; }
+  .project-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 48px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: start;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+    transform-origin: top;
+  }
+  .project-item:hover { border-color: rgba(201,168,76,0.3); }
+  .project-item:hover::before { transform: scaleY(1); }
+  .project-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .project-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .project-brand {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    font-family: 'DM Mono', monospace;
+  }
+  .project-desc {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 24px;
+    max-width: 600px;
+  }
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tech-badge {
+    font-size: 10px;
+    padding: 4px 10px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--gold-light);
+    letter-spacing: 0.08em;
+  }
+  .project-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    align-self: start;
+    transition: all 0.3s;
+  }
+  .project-link:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .project-link svg { transition: transform 0.3s; }
+  .project-link:hover svg { transform: translate(2px, -2px); }
+
+  /* EXPERIENCE */
+  .exp-list { display: flex; flex-direction: column; }
+  .exp-item {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 60px;
+  }
+  .exp-item:last-child { border-bottom: none; }
+  .exp-meta { }
+  .exp-period {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .exp-company {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .exp-location {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .exp-role {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+  .exp-points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .exp-points li {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    padding-left: 20px;
+    position: relative;
+  }
+  .exp-points li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .contact-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 7vw, 100px);
+    font-weight: 300;
+    color: var(--white);
+    line-height: 0.9;
+  }
+  .contact-big em {
+    font-style: italic;
+    color: var(--gold-light);
+    display: block;
+  }
+  .contact-details { display: flex; flex-direction: column; gap: 24px; }
+  .contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .contact-item:last-child { border-bottom: none; }
+  .contact-item-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .contact-item-val {
+    font-size: 15px;
+    color: var(--cream);
+  }
+  .contact-item-val a {
+    color: var(--cream);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .contact-item-val a:hover { color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .hero { padding: 0 24px; }
+    .hero-name { font-size: 60px; }
+    .about-grid { grid-template-columns: 1fr; gap: 48px; }
+    .contact-inner { grid-template-columns: 1fr; gap: 48px; }
+    .exp-item { grid-template-columns: 1fr; gap: 24px; }
+    .project-item { grid-template-columns: 1fr; }
+    .about-stats { grid-template-columns: 1fr 1fr; }
+    .hero-scroll { display: none; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Ashma <span>B.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-content">
+    <p class="hero-tag">Front-End Developer · Dubai, UAE</p>
+    <h1 class="hero-name">Ashma<br><em>Bhagad</em></h1>
+    <p class="hero-desc">Crafting high-performance eCommerce storefronts and production-grade web applications. Specialising in Shopify theme development, conversion optimisation, and intelligent data systems.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn"><span>View Work</span></a>
+      <a href="#contact" class="btn btn-ghost"><span>Get in Touch</span></a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">Who I Am</div>
+  <h2 class="section-title reveal">Building digital<br>experiences that <em>convert</em></h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>Full-Stack Developer with <strong>2.5+ years</strong> of experience building and launching high-performance eCommerce storefronts and production-grade web applications.</p>
+      <p>Hands-on expertise in <strong>Shopify and Shopify 2.0</strong> theme development — custom Liquid templating, JavaScript/GSAP-powered animations, responsive UI components, and advanced filtering functionality delivered across multiple live DTC brands.</p>
+      <p>Experienced in implementing <strong>conversion-focused enhancements</strong>, automated discount systems, multi-currency via Shopify Markets, GA4 + GTM analytics tracking, and Klaviyo email automation flows.</p>
+      <p>Strong backend foundation in Flask and FastAPI enables seamless full-stack delivery from storefront to API layer.</p>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat-card">
+        <div class="stat-num">2.5+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">5+</div>
+        <div class="stat-label">Live Storefronts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">40%</div>
+        <div class="stat-label">Efficiency Gains</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Records Managed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="section-label">Capabilities</div>
+  <h2 class="section-title reveal">Technical <em>Skills</em></h2>
+  <div class="skills-grid reveal">
+    <div class="skill-group">
+      <div class="skill-group-title">eCommerce & Shopify</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Shopify 2.0</span>
+        <span class="skill-tag">Liquid</span>
+        <span class="skill-tag">Shopify Markets</span>
+        <span class="skill-tag">Klaviyo</span>
+        <span class="skill-tag">GA4 + GTM</span>
+        <span class="skill-tag">Webflow</span>
+        <span class="skill-tag">WooCommerce</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Front-End</div>
+      <div class="skill-tags">
+        <span class="skill-tag">HTML5</span>
+        <span class="skill-tag">CSS3</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">GSAP</span>
+        <span class="skill-tag">AJAX</span>
+        <span class="skill-tag">jQuery</span>
+        <span class="skill-tag">Responsive Design</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Back-End & APIs</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Flask</span>
+        <span class="skill-tag">FastAPI</span>
+        <span class="skill-tag">REST APIs</span>
+        <span class="skill-tag">WebSockets</span>
+        <span class="skill-tag">Django</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Data & Cloud</div>
+      <div class="skill-tags">
+        <span class="skill-tag">MSSQL</span>
+        <span class="skill-tag">MongoDB</span>
+        <span class="skill-tag">Power BI</span>
+        <span class="skill-tag">AWS Lambda</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Streamlit</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">AI & Automation</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Gemini AI</span>
+        <span class="skill-tag">Scikit-learn</span>
+        <span class="skill-tag">Pinecone</span>
+        <span class="skill-tag">Selenium</span>
+        <span class="skill-tag">Playwright</span>
+        <span class="skill-tag">Smartsheet</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Analytics & CRO</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Google Analytics 4</span>
+        <span class="skill-tag">GTM</span>
+        <span class="skill-tag">A/B Testing</span>
+        <span class="skill-tag">CRO</span>
+        <span class="skill-tag">Klaviyo</span>
+        <span class="skill-tag">Email Automation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">Selected Work</div>
+  <h2 class="section-title reveal">Live <em>Projects</em></h2>
+  <div class="projects-list">
+
+    <div class="project-item reveal">
+      <div>
+        <div class="project-num">01</div>
+        <div class="project-name">Lasabia Madrid</div>
+        <div class="project-brand">Premium Perfume Brand · eCommerce</div>
+        <p class="project-desc">Integrated Shopify backend with Webflow frontend for a luxury perfume brand. Implemented Klaviyo email automation flows, configured GA4 + GTM analytics tracking, multi-currency via Shopify Markets, and built an automated discount system for product launch. Focused on conversion-rate optimisation and performance improvements.</p>
+        <div class="project-tech">
+          <span class="tech-badge">Shopify</span>
+          <span class="tech-badge">Webflow</span>
+          <span class="tech-badge">Klaviyo</span>
+          <span class="tech-badge">GA4</span>
+          <span class="tech-badge">GTM</span>
+          <span class="tech-badge">Shopify Markets</span>
+          <span class="tech-badge">CRO</span>
+        </div>
+      </div>
+      <a href="https://www.lasabiamadrid.com/"  class="project-link">
+        View Live
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+    </div>
+
+    <div class="project-item reveal">
+      <div>
+        <div class="project-num">02</div>
+        <div class="project-name">Apex Gum</div>
+        <div class="project-brand">Premium E-commerce Store · Shopify 2.0</div>
+        <p class="project-desc">Developed and launched a premium Shopify 2.0 storefront with GSAP-powered animations, interactive product displays, and advanced filtering functionality. Built custom Liquid code to create unique layouts and an enhanced shopping experience focused on performance and UX.</p>
+        <div class="project-tech">
+          <span class="tech-badge">Shopify 2.0</span>
+          <span class="tech-badge">Liquid</span>
+          <span class="tech-badge">GSAP</span>
+          <span class="tech-badge">HTML5</span>
+          <span class="tech-badge">CSS3</span>
+          <span class="tech-badge">JavaScript</span>
+        </div>
+      </div>
+      <a href="https://apexgum.com/"  class="project-link">
+        View Live
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+    </div>
+
+    <div class="project-item reveal">
+      <div>
+        <div class="project-num">03</div>
+        <div class="project-name">Fragile Base</div>
+        <div class="project-brand">Full-Featured E-commerce Store · Shopify</div>
+        <p class="project-desc">Developed and launched a full-featured e-commerce store on Shopify. Implemented custom Liquid templating to create unique page layouts and added custom functionality beyond standard theme settings, delivering a tailored storefront experience.</p>
+        <div class="project-tech">
+          <span class="tech-badge">Shopify</span>
+          <span class="tech-badge">Liquid</span>
+          <span class="tech-badge">HTML</span>
+          <span class="tech-badge">CSS</span>
+          <span class="tech-badge">JavaScript</span>
+        </div>
+      </div>
+      <a href="https://fragilebase.com/"  class="project-link">
+        View Live
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+    </div>
+
+    <div class="project-item reveal">
+      <div>
+        <div class="project-num">04</div>
+        <div class="project-name">SaaS Intelligence Platform</div>
+        <div class="project-brand">Archcorp Creative Technologies · Enterprise</div>
+        <p class="project-desc">Engineered a multi-tenant SaaS platform tracking 500+ records with AI-based semantic matching (Gemini AI + Pinecone), WebSocket real-time updates, Power BI dashboards, AJAX-powered frontend, and Smartsheet/Teams workflow automation. Improved matching accuracy by 25% and reduced operational effort by 50%.</p>
+        <div class="project-tech">
+          <span class="tech-badge">Flask</span>
+          <span class="tech-badge">FastAPI</span>
+          <span class="tech-badge">Gemini AI</span>
+          <span class="tech-badge">Pinecone</span>
+          <span class="tech-badge">Power BI</span>
+          <span class="tech-badge">WebSockets</span>
+          <span class="tech-badge">MSSQL</span>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="background: var(--bg2);">
+  <div class="section-label">Career</div>
+  <h2 class="section-title reveal">Professional <em>Experience</em></h2>
+  <div class="exp-list">
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-period">Aug 2025 — Present</div>
+        <div class="exp-company">Archcorp Creative Technologies</div>
+        <div class="exp-location">Dubai, UAE</div>
+      </div>
+      <div>
+        <div class="exp-role">Full Stack Developer</div>
+        <ul class="exp-points">
+          <li>Delivered a production SaaS intelligence platform tracking 500+ records with AI-based semantic matching, improving accuracy by 25%</li>
+          <li>Automated Smartsheet and Microsoft Teams workflows, reducing manual operational effort by 50% for 10+ users</li>
+          <li>Built real-time dashboards and APIs supporting analytics for 1,000+ datasets</li>
+          <li>Developed high-performance catalog search APIs with AJAX-powered frontend interactions</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-period">Jun 2023 — May 2025</div>
+        <div class="exp-company">Global Tender Services</div>
+        <div class="exp-location">Mumbai, India</div>
+      </div>
+      <div>
+        <div class="exp-role">Python Developer</div>
+        <ul class="exp-points">
+          <li>Improved data extraction efficiency by 40% through automation, AJAX-driven scraping, and anti-bot techniques</li>
+          <li>Designed resilient scraping pipelines for JavaScript-heavy platforms with CAPTCHA bypass and IP rotation</li>
+          <li>Built modular Python services with robust logging, error handling, and performance optimisation</li>
+          <li>Applied ML techniques including linear regression and Scikit-learn pipelines</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-period">Nov 2022 — Apr 2023</div>
+        <div class="exp-company">NextGen Software Pvt. Ltd.</div>
+        <div class="exp-location">Mumbai, India</div>
+      </div>
+      <div>
+        <div class="exp-role">Python Developer Intern</div>
+        <ul class="exp-points">
+          <li>Collaborated with senior developers on automation scripts and web scrapers</li>
+          <li>Gained hands-on experience with jQuery, AJAX calls, SQL optimisation, and CAPTCHA handling</li>
+          <li>Developed maintainable Python code practices across team projects</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div>
+      <div class="section-label">Let's Talk</div>
+      <div class="contact-big reveal">Let's build<br>something <em>great</em></div>
+    </div>
+    <div class="contact-details reveal">
+      <div class="contact-item">
+        <span class="contact-item-label">Email</span>
+        <span class="contact-item-val"><a href="mailto:ashma.bhagad@gmail.com">ashma.bhagad@gmail.com</a></span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-item-label">Phone</span>
+        <span class="contact-item-val"><a href="tel:+971528689190">+971 528 689 190</a></span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-item-label">Location</span>
+        <span class="contact-item-val">Dubai, UAE</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-item-label">LinkedIn</span>
+        <span class="contact-item-val"><a href="https://linkedin.com/in/ashma-bhagad" >linkedin.com/in/ashma-bhagad</a></span>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="mailto:ashma.bhagad@gmail.com" class="btn"><span>Send a Message</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Ashma Bhagad — All rights reserved</p>
+  <p>Built with precision · Dubai, UAE</p>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    cursorRing.style.left = ringX + 'px';
+    cursorRing.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursorRing.style.transform = 'translate(-50%,-50%) scale(1.8)';
+      cursorRing.style.opacity = '1';
+      cursor.style.transform = 'translate(-50%,-50%) scale(0.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursorRing.style.transform = 'translate(-50%,-50%) scale(1)';
+      cursorRing.style.opacity = '0.5';
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+  });
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  reveals.forEach(el => el.classList.add('visible'));
+  const observer = new IntersectionObserver(entries =>
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.1 }
+  );
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
